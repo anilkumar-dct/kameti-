@@ -5,9 +5,11 @@ import { Todo } from '@prisma/client'
 declare global {
   interface Window {
     electron: ElectronAPI
-    todo:{
+    todo: {
       create: (todoInput: TodoInput) => Promise<Todo>
       getAll: () => Promise<Todo[]>
+      toggle: (id: number, completed: boolean) => Promise<Todo>
+      delete: (id: number) => Promise<void>
     }
   }
 }

@@ -1,1 +1,0 @@
-console.log(window.todo.create({title: 'Test Todo'}))
