@@ -4,3 +4,10 @@ out
 .DS_Store
 .eslintcache
 *.log*
+
+# env files
+.env.development
+.env.production
+
+# db files
+prisma/kameti.db
