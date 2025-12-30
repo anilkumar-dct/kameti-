@@ -3,7 +3,10 @@
     "version": "1.0.0",
     "description": "An Electron application with React and TypeScript",
     "main": "./out/main/index.js",
-    "author": "example.com",
+    "author": {
+      "name": "example.com",
+      "email": "contact@example.com"
+    },
     "homepage": "https://electron-vite.org",
     "scripts": {
       "format": "prettier --write .",
@@ -54,6 +57,7 @@
     "build": {
       "appId": "com.example.kameti",
       "productName": "Kameti Management",
+      "publish": null,
       "asar": true,
       "asarUnpack": [
         "**/.prisma/**",
