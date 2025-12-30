@@ -1,12 +1,12 @@
 import Versions from './components/Versions'
 import UpdateNotification from './components/UpdateNotification'
-import TodoApp from './components/TodoApp'
 
 function App(): React.JSX.Element {
   return (
     <>
       <div className="container">
-        <TodoApp />
+        <h1>Kameti Management</h1>
+        <p>Your clean start begins here.</p>
       </div>
       <Versions />
       <UpdateNotification />

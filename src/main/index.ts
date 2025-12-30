@@ -7,9 +7,12 @@ process.env.DATABASE_URL = `file:${dbPath}`
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
-import './todo/todo.controller'
 import { initUpdater } from './updater'
 import { runMigrations } from './db'
+
+// Disable GPU cache to prevent "Access is denied" errors on Windows
+app.commandLine.appendSwitch('disable-gpu-shader-disk-cache')
+
 function createWindow(): BrowserWindow {
   // Create the browser window.
   const mainWindow = new BrowserWindow({
