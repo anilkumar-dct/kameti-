@@ -1,4 +1,9 @@
+import dotenv from 'dotenv'
+dotenv.config({ path: '.env.development' })
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
+import path from 'path'
+const dbPath = path.join(app.getPath('userData'), 'kameti.db')
+process.env.DATABASE_URL = `file:${dbPath}`
 import { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'

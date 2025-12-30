@@ -9,5 +9,8 @@ out
 .env.development
 .env.production
 
-# db files
-prisma/kameti.db
+# SQLite runtime files
+*.db
+*.db-journal
+*.db-wal
+*.db-shm

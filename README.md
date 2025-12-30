@@ -32,3 +32,8 @@ $ npm run build:mac
 # For Linux
 $ npm run build:linux
 ```
+
+
+### Prisma
+
+$ npx dotenv -e .env.development -- npx prisma migrate dev
