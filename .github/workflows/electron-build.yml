@@ -54,4 +54,3 @@ jobs:
           name: ${{ matrix.os }}-build
           path: dist/
           retention-days: 5
-
