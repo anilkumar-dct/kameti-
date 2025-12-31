@@ -4,7 +4,7 @@ import log from 'electron-log'
 
 // Configure logging
 autoUpdater.logger = log
-// @ts-ignore: autoUpdater.logger might not expose transports in some type definitions
+// @ts-ignore
 autoUpdater.logger.transports.file.level = 'info'
 
 export function initUpdater(mainWindow: BrowserWindow): void {
