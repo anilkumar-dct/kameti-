@@ -9,6 +9,7 @@ import { electronApp, optimizer, is } from '@electron-toolkit/utils'
 import icon from '../../resources/icon.png?asset'
 import { initUpdater } from './updater'
 import { runMigrations } from './db'
+import './container' // Initializes DI container and registers IPC handlers
 
 // Disable GPU cache to prevent "Access is denied" errors on Windows
 app.commandLine.appendSwitch('disable-gpu-shader-disk-cache')

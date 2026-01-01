@@ -21,3 +21,44 @@ model User {
   email String? @unique
 }
 
+// Define the enum for Kameti status
+enum KametiStatus {
+  ACTIVE
+  INACTIVE
+  COMPLETED
+}
+
+model Kameti {
+  id        Int                      @id @default(autoincrement())
+  title     String                   @unique
+  budget    Float
+  months    Int
+  installment Float
+  status    KametiStatus             @default(INACTIVE)
+  createdAt DateTime                 @default(now())
+  updatedAt DateTime                 @updatedAt
+
+  // Relations to monthly withdrawals model
+  monthlyWithdrawals KametiMonthlyWithdrawal[]
+
+  // Define table name in database
+  @@map("kameti") 
+}
+
+model KametiMonthlyWithdrawal {
+  id         Int      @id @default(autoincrement())
+  kametiId   Int
+  monthNumber Int
+  amount     Float
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // Relations to kameti model
+  kameti Kameti @relation(fields: [kametiId], references: [id])
+
+  // One withdrawal per month per kameti
+  @@unique([kametiId, monthNumber]) 
+
+  // Define table name in database
+  @@map("kameti_monthly_withdrawal")
+}

@@ -2,9 +2,6 @@ import { execSync } from 'child_process'
 import path from 'path'
 import { app } from 'electron'
 import fs from 'fs'
-import { PrismaClient } from '@prisma/client'
-
-export const prisma = new PrismaClient()
 
 export async function runMigrations(): Promise<void> {
   const dbPath = path.join(app.getPath('userData'), 'kameti.db')
