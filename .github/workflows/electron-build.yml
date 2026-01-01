@@ -1,42 +1,72 @@
+# Workflow name - This will be displayed in the GitHub Actions UI
 name: Build/Release Electron App
 
+# === TRIGGER CONFIGURATION ===
+# This workflow ONLY runs when a tag starting with "v" is pushed.
+# Example: v1.0.0, v2.3.1
+# It will never run on a normal branch push.
 on:
   push:
-    branches:
-      - main
     tags:
       - 'v*'
-  workflow_dispatch:
 
+# === PERMISSIONS ===
+# contents: write allows the workflow to:
+# - Create or update GitHub releases
+# - Upload release assets/artifacts
 permissions:
   contents: write
 
+# === CONCURRENCY CONTROL ===
+# If multiple releases are triggered simultaneously,
+# older ones will be cancelled to prevent race conditions or duplicate releases.
+concurrency:
+  group: release-main
+  cancel-in-progress: true
+
 jobs:
   build:
+    # Additional safety guard:
+    # Ensures the job only runs if the git reference is a tag starting with "v".
+    if: startsWith(github.ref, 'refs/tags/v')
+
+    # Matrix build - The same job will run on Windows, macOS, and Linux runners.
     runs-on: ${{ matrix.os }}
 
     strategy:
       matrix:
-        os: [windows-latest, macos-latest, ubuntu-latest]
+        os:
+          - windows-latest
+          - macos-latest
+          - ubuntu-latest
 
     steps:
-      - name: Check out Git repository
-        uses: actions/checkout@v4
+      # Step 1: Checkout the repository code
+      # Required for the CI to access the project files.
+      - uses: actions/checkout@v4
 
-      - name: Install Node.js
-        uses: actions/setup-node@v4
+      # Step 2: Set up Node.js
+      # Uses Node 20 and enables npm caching for faster subsequent runs.
+      - uses: actions/setup-node@v4
         with:
           node-version: 20
-          cache: 'npm'
+          cache: npm
 
-      - name: Install dependencies
-        run: npm ci
+      # Step 3: Install dependencies
+      # npm ci is used for consistent and reproducible installs in CI environments.
+      - run: npm ci
 
-      - name: Generate Prisma Client
-        run: npx prisma generate
+      # Step 4: Generate Prisma Client
+      # Essential step if using Prisma; otherwise, the build would fail.
+      - run: npx prisma generate
 
+      # Step 5: Build and Publish the Electron app
+      # Different build commands are executed based on the runner's OS.
+      # --publish always ensures artifacts are automatically uploaded to GitHub Releases.
       - name: Build Electron App
         env:
+          # GH_TOKEN is a built-in GitHub secret used by electron-builder
+          # to authenticate with GitHub Releases.
           GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
         run: |
           if [ "$RUNNER_OS" == "Windows" ]; then
@@ -47,11 +77,3 @@ jobs:
             npm run build:linux -- --publish always
           fi
         shell: bash
-
-      - name: Upload Artifacts
-        uses: actions/upload-artifact@v4
-        with:
-          name: ${{ matrix.os }}-build
-          path: dist/
-          retention-days: 5
-

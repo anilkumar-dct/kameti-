@@ -1,0 +1,52 @@
+# Name of the workflow shown in GitHub Actions UI
+name: PR Check
+
+# This workflow runs when a Pull Request is created or updated
+on:
+  pull_request:
+    # It will run only if PR target branch is dev or main
+    branches:
+      - dev
+      - main
+
+jobs:
+  validate:
+    # Run this job on Ubuntu machine
+    runs-on: ubuntu-latest
+
+    steps:
+      # Step 1: Download the repository code into the runner
+      - uses: actions/checkout@v4
+
+      # Step 2: Install Node.js
+      - uses: actions/setup-node@v4
+        with:
+          # Node version used in the project
+          node-version: 20
+          # Cache npm dependencies to speed up next runs
+          cache: npm
+
+      # Step 3: Install dependencies using package-lock.json
+      # npm ci is faster and safer for CI than npm install
+      - name: Install dependencies
+        run: npm ci
+
+      # Step 4: Generate Prisma client
+      # Required before build or typecheck
+      - name: Generate Prisma Client
+        run: npx prisma generate
+
+      # Step 5: Run TypeScript type checking
+      # This fails if there are type errors
+      - name: Run typecheck
+        run: npm run typecheck
+
+      # Step 6: Run ESLint
+      # This fails if lint rules are broken
+      - name: Run lint
+        run: npm run lint
+
+      # Step 7: Run build to ensure project can compile
+      # No publishing, only validation
+      - name: Run build
+        run: npm run build
