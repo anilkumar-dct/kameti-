@@ -15,10 +15,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+enum UserStatus {
+  Active
+  Inactive
+  Defaulter
+}
 // Prisma requires at least one model to generate the client
 model User {
-  id    Int     @id @default(autoincrement())
-  email String? @unique
+  id              Int        @id @default(autoincrement())
+  name            String
+  father_name     String?
+  phone_no        String?    @unique
+  profile_image   String?
+  status          UserStatus
+  aadhaar_number  String?
+  reference       Int?
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Self-referencing relation
+  referrer        User?      @relation("UserReference", fields: [reference], references: [id])
+  referrals       User[]     @relation("UserReference")
 }
 
 // Define the enum for Kameti status
