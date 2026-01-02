@@ -62,3 +62,16 @@ model KametiMonthlyWithdrawal {
   // Define table name in database
   @@map("kameti_monthly_withdrawal")
 }
+
+model Admin{
+  id    Int     @id @default(autoincrement())
+  firstName String
+  lastName String?
+  email String? @unique
+  phone String? @unique
+  password String
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+
+  @@map("admin")
+}
