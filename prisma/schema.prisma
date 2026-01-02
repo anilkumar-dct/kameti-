@@ -35,11 +35,11 @@ model Kameti {
   months    Int
   installment Float
   status    KametiStatus             @default(INACTIVE)
-  createdAt DateTime                 @default(now())
-  updatedAt DateTime                 @updatedAt
+  created_at DateTime                 @default(now()) @map("created_at")
+  updated_at DateTime                 @updatedAt @map("updated_at")
 
   // Relations to monthly withdrawals model
-  monthlyWithdrawals KametiMonthlyWithdrawal[]
+  monthly_withdrawals KametiMonthlyWithdrawal[]
 
   // Define table name in database
   @@map("kameti") 
@@ -47,17 +47,17 @@ model Kameti {
 
 model KametiMonthlyWithdrawal {
   id         Int      @id @default(autoincrement())
-  kametiId   Int
-  monthNumber Int
+  kameti_id   Int      @map("kameti_id")
+  month_number Int      @map("month_number")
   amount     Float
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  created_at  DateTime @default(now()) @map("created_at")
+  updated_at  DateTime @updatedAt @map("updated_at")
 
   // Relations to kameti model
-  kameti Kameti @relation(fields: [kametiId], references: [id])
+  kameti Kameti @relation(fields: [kameti_id], references: [id])
 
   // One withdrawal per month per kameti
-  @@unique([kametiId, monthNumber]) 
+  @@unique([kameti_id, month_number]) 
 
   // Define table name in database
   @@map("kameti_monthly_withdrawal")
@@ -65,13 +65,13 @@ model KametiMonthlyWithdrawal {
 
 model Admin{
   id    Int     @id @default(autoincrement())
-  firstName String
-  lastName String?
-  email String? @unique
+  full_name String @map("full_name")
+  email String @unique
   phone String? @unique
+  profile_picture String? @map("profile_picture")
   password String
-  createdAt DateTime @default(now())
-  updatedAt DateTime @updatedAt
+  created_at DateTime @default(now()) @map("created_at")
+  updated_at DateTime @updatedAt @map("updated_at")
 
   @@map("admin")
 }

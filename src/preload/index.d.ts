@@ -1,6 +1,5 @@
 import { ElectronAPI } from '@electron-toolkit/preload'
-import { ApiResponse } from '../main/common/ApiResponse/IApiResponse'
-import { KametiResponseDto } from '../main/kameti/schema/kametiRespone.dto'
+import { ApiResponse } from '../main/common/interfaces/IApiResponse'
 import { KametiCreateDto } from '../main/kameti/schema/kametiCreate.dto'
 import { KametiUpdateDto } from '../main/kameti/schema/kametiUpdate.dto'
 import { Kameti } from '@prisma/client'
@@ -11,12 +10,12 @@ declare global {
     electron: ElectronAPI
     api: {
       kameti: {
-        findAll: (query?: KametiQueryDto) => Promise<ApiResponse<KametiResponseDto[]>>
-        findById: (id: number) => Promise<ApiResponse<KametiResponseDto>>
-        findOne: (filter: Partial<Kameti>) => Promise<ApiResponse<KametiResponseDto>>
-        create: (data: KametiCreateDto) => Promise<ApiResponse<KametiResponseDto>>
-        update: (id: number, data: KametiUpdateDto) => Promise<ApiResponse<KametiResponseDto>>
-        delete: (id: number) => Promise<ApiResponse<KametiResponseDto>>
+        findAll: (query?: KametiQueryDto) => Promise<ApiResponse<Kameti[]>>
+        findById: (id: number) => Promise<ApiResponse<Kameti>>
+        findOne: (filter: Partial<Kameti>) => Promise<ApiResponse<Kameti>>
+        create: (data: KametiCreateDto) => Promise<ApiResponse<Kameti>>
+        update: (id: number, data: KametiUpdateDto) => Promise<ApiResponse<Kameti>>
+        delete: (id: number) => Promise<ApiResponse<Kameti>>
       }
     }
   }

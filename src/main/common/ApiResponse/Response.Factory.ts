@@ -1,4 +1,4 @@
-import { ApiResponse } from './IApiResponse'
+import { ApiResponse } from '../interfaces/IApiResponse'
 
 /**
  * Factory class for creating standardized ApiResponse objects.

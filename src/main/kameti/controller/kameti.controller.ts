@@ -1,7 +1,6 @@
 import { IpcMainInvokeEvent, ipcMain } from 'electron'
 import { KametiService } from '../service/KametiService'
-import { ApiResponse } from '../../common/ApiResponse/IApiResponse'
-import { KametiResponseDto } from '../schema/kametiRespone.dto'
+import { ApiResponse } from '../../common/interfaces/IApiResponse'
 import { Kameti } from '@prisma/client'
 import { KametiCreateDto } from '../schema/kametiCreate.dto'
 import { KametiUpdateDto } from '../schema/kametiUpdate.dto'
@@ -39,28 +38,22 @@ export class KametiController {
   private async findAll(
     _: IpcMainInvokeEvent,
     query?: KametiQueryDto
-  ): Promise<ApiResponse<PaginatedResponse<KametiResponseDto>>> {
+  ): Promise<ApiResponse<PaginatedResponse<Kameti>>> {
     return await this.kametiService.findAll(query)
   }
 
-  private async findById(
-    _: IpcMainInvokeEvent,
-    id: number
-  ): Promise<ApiResponse<KametiResponseDto | null>> {
+  private async findById(_: IpcMainInvokeEvent, id: number): Promise<ApiResponse<Kameti | null>> {
     return await this.kametiService.findById(id)
   }
 
   private async findOne(
     _: IpcMainInvokeEvent,
     filter: Partial<Kameti>
-  ): Promise<ApiResponse<KametiResponseDto>> {
+  ): Promise<ApiResponse<Kameti>> {
     return await this.kametiService.findOne(filter)
   }
 
-  private async create(
-    _: IpcMainInvokeEvent,
-    data: KametiCreateDto
-  ): Promise<ApiResponse<KametiResponseDto>> {
+  private async create(_: IpcMainInvokeEvent, data: KametiCreateDto): Promise<ApiResponse<Kameti>> {
     return await this.kametiService.create(data)
   }
 
@@ -68,7 +61,7 @@ export class KametiController {
     _: IpcMainInvokeEvent,
     id: number,
     data: KametiUpdateDto
-  ): Promise<ApiResponse<KametiResponseDto>> {
+  ): Promise<ApiResponse<Kameti>> {
     return await this.kametiService.update(id, data)
   }
 
