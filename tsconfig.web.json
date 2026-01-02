@@ -7,9 +7,9 @@
     "src/preload/*.d.ts",
     "src/main/db.ts",
     "src/main/index.ts",
+    "src/main/env.d.ts",
     "src/main/**/*.schema.ts",
     "src/main/**/*.service.ts",
-
   ],
   "compilerOptions": {
     "composite": true,

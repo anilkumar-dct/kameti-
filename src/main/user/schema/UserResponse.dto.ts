@@ -1,4 +1,4 @@
-import { UserStatus } from "@prisma/client";
+import { UserStatus } from '@prisma/client'
 
 /**
  * Data Transfer Object representing a User record returned from the database.
@@ -6,38 +6,37 @@ import { UserStatus } from "@prisma/client";
  */
 export class UserResponseDto {
   /** Numerical ID of the user */
-  id: number = 0;
+  id: number = 0
 
   /** Full name of the user */
-  name: string = "";
+  name: string = ''
 
   /** Father's name (optional) */
-  father_name?: string;
+  father_name?: string
 
   /** Phone number (optional, unique) */
-  phone_no?: string;
+  phone_no?: string
 
   /** Profile image path (optional) */
-  profile_image?: string;
+  profile_image?: string
 
-  /** Current status based on UserStatus enum */
-  status: UserStatus = UserStatus.Active;
+  status?: UserStatus 
 
   /** Aadhaar number (optional) */
-  aadhaar_number?: string;
+  aadhaar_number?: string
 
   /** Reference user ID (self-referencing) */
-  reference?: number;
+  reference?: number
 
   /** Record creation timestamp */
-  created_at: Date = new Date();
+  created_at: Date = new Date()
 
   /** Last update timestamp */
-  updated_at: Date = new Date();
+  updated_at: Date = new Date()
 
   /** Optional referrer user (self relation) */
-  referrer?: UserResponseDto;
+  referrer?: UserResponseDto
 
   /** Optional list of referred users */
-  referrals?: UserResponseDto[];
+  referrals?: UserResponseDto[]
 }

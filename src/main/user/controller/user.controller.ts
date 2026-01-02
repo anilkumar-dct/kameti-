@@ -74,4 +74,3 @@ export class UserController {
     return await this.userService.delete(id)
   }
 }
-

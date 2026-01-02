@@ -12,10 +12,7 @@ import { PaginatedResponse } from '../../../common/interfaces/IPaginatedResponse
  * Inherits base implementation from `CommonRepo` and extends with user-specific logic.
  * Implements methods for `findAll`, `findById`, `create`, `findOne`, `update`, and `delete`.
  */
-export class UserRepository
-  extends CommonRepo<User, UserCreateDto, void>
-  implements IUserRepo
-{
+export class UserRepository extends CommonRepo<User, UserCreateDto, void> implements IUserRepo {
   /**
    * Initializes the repository with an injected Prisma client.
    * Passes `prisma.user` to the generic `CommonRepo` superclass.

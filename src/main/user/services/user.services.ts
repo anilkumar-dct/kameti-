@@ -26,7 +26,11 @@ export class UserService {
   async findAll(): Promise<ApiResponse<PaginatedResponse<UserResponseDto>>> {
     try {
       const result = await this.userRepo.findAll()
-      return ResponseFactory.success(result as PaginatedResponse<UserResponseDto>, 'OK', 'Users Fetched Successfully.')
+      return ResponseFactory.success(
+        result as PaginatedResponse<UserResponseDto>,
+        'OK',
+        'Users Fetched Successfully.'
+      )
     } catch (error) {
       return ResponseFactory.exception(error as Error)
     }
@@ -114,8 +118,7 @@ export class UserService {
         name: validatedData.name,
         father_name: validatedData.father_name,
         phone_no: validatedData.phone_no,
-        profile_image: (validatedData as any).profile_image,
-        status: validatedData.status,
+        profile_image: validatedData.profile_image as string,
         aadhaar_number: validatedData.aadhaar_number,
         reference: validatedData.reference
       }
@@ -127,7 +130,11 @@ export class UserService {
         return ResponseFactory.error('Failed to create user', 'SERVER_ERROR', 'Unknown error')
       }
 
-      return ResponseFactory.success(user as UserResponseDto, 'CREATED', 'User Created Successfully.')
+      return ResponseFactory.success(
+        user as UserResponseDto,
+        'CREATED',
+        'User Created Successfully.'
+      )
     } catch (error) {
       return ResponseFactory.exception(error as Error)
     }
@@ -139,10 +146,7 @@ export class UserService {
    * @param data - The partial data to update.
    * @returns A promise resolving to an ApiResponse with the updated record or an error.
    */
-  async update(
-    id: number,
-    data: UserUpdateDto
-  ): Promise<ApiResponse<UserResponseDto>> {
+  async update(id: number, data: UserUpdateDto): Promise<ApiResponse<UserResponseDto>> {
     try {
       if (!id || id <= 0) {
         return ResponseFactory.error('Invalid ID provided', 'BAD_REQUEST', 'Validation failed')
@@ -164,15 +168,19 @@ export class UserService {
       // Check if user exists
       const existingUser = await this.userRepo.findById(id)
       if (!existingUser) {
-        return ResponseFactory.error('User not found with id: ' + id, 'NOT_FOUND', 'Record not found')
+        return ResponseFactory.error(
+          'User not found with id: ' + id,
+          'NOT_FOUND',
+          'Record not found'
+        )
       }
 
       // Prepare update data (profile_image should be handled separately via file upload endpoints)
       const updateData: Partial<UserUpdateDto> = { ...validatedData }
 
       // Include profile_image if provided
-      if ((validatedData as any).profile_image) {
-        ;(updateData as any).profile_image = (validatedData as any).profile_image
+      if (validatedData.profile_image) {
+        updateData.profile_image = validatedData.profile_image
       }
 
       // Update user
@@ -202,7 +210,11 @@ export class UserService {
       // Check if user exists
       const existingUser = await this.userRepo.findById(id)
       if (!existingUser) {
-        return ResponseFactory.error('User not found with id: ' + id, 'NOT_FOUND', 'Record not found')
+        return ResponseFactory.error(
+          'User not found with id: ' + id,
+          'NOT_FOUND',
+          'Record not found'
+        )
       }
 
       // Delete user

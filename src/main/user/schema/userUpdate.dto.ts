@@ -28,9 +28,6 @@ export const userUpdateDto = z.object({
   /** Profile image path (optional) */
   profile_image: z.string().optional(),
 
-  /** User current status */
-  status: z.enum(['Active', 'Inactive', 'Defaulter']).optional(),
-
   /** Aadhaar number (optional) */
   aadhaar_number: z
     .string()
@@ -38,7 +35,7 @@ export const userUpdateDto = z.object({
     .optional(),
 
   /** Reference user ID (self-reference) */
-  reference: z.number().int().positive().optional()
+  reference: z.number().int().positive().nullable()
 })
 
 /** TypeScript type inferred from the Zod schema */

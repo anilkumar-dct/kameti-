@@ -18,7 +18,9 @@ declare global {
     electron: ElectronAPI
     api: {
       kameti: {
-        findAll: (query?: KametiQueryDto) => Promise<ApiResponse<PaginatedResponse<KametiResponseDto>>>
+        findAll: (
+          query?: KametiQueryDto
+        ) => Promise<ApiResponse<PaginatedResponse<KametiResponseDto>>>
         findById: (id: number) => Promise<ApiResponse<KametiResponseDto>>
         findOne: (filter: Partial<Kameti>) => Promise<ApiResponse<KametiResponseDto>>
         create: (data: KametiCreateDto) => Promise<ApiResponse<KametiResponseDto>>

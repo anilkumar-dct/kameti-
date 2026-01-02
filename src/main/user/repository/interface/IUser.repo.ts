@@ -1,13 +1,8 @@
-import { User } from "@prisma/client";
-import { ICommonRepo } from "../../../common/interfaces/ICommon.Repo";
-import { UserCreateDto } from "../../schema/userCreate.dto";
-import { UserUpdateDto } from "../../schema/userUpdate.dto";
-import { UserResponseDto } from "../../schema/UserResponse.dto";
-
-
-
-
-
+import { User } from '@prisma/client'
+import { ICommonRepo } from '../../../common/interfaces/ICommon.Repo'
+import { UserCreateDto } from '../../schema/userCreate.dto'
+import { UserUpdateDto } from '../../schema/userUpdate.dto'
+import { UserResponseDto } from '../../schema/UserResponse.dto'
 
 export interface IUserRepo extends ICommonRepo<User, UserCreateDto, void> {
   /** Finds a single record matching specific scalar filters (e.g. phone_no, email). */

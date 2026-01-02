@@ -17,9 +17,9 @@ datasource db {
 
 
 enum UserStatus {
-  Active
-  Inactive
-  Defaulter
+  ACTIVE
+  INACTIVE
+  DEFULTER
 }
 // Prisma requires at least one model to generate the client
 model User {
@@ -28,7 +28,7 @@ model User {
   father_name     String?
   phone_no        String?    @unique
   profile_image   String?
-  status          UserStatus
+  status          UserStatus @default(INACTIVE)
   aadhaar_number  String?
   reference       Int?
   created_at      DateTime   @default(now())
@@ -80,3 +80,6 @@ model KametiMonthlyWithdrawal {
   // Define table name in database
   @@map("kameti_monthly_withdrawal")
 }
+
+
+
