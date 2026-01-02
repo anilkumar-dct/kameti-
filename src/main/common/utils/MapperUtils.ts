@@ -9,7 +9,16 @@ export class MapperUtils {
    */
   static toDto<T extends object, U extends object>(source: T, DtoClass: new () => U): U {
     const dto = new DtoClass()
-    Object.assign(dto, source)
+    const keys = Object.keys(dto) as (keyof U)[]
+
+    keys.forEach((key) => {
+      // Check if the key exists in source using 'in' operator to handle undefined values correctly if key exists
+      if (key in source) {
+        // eslint-disable-next-line @typescript-eslint/no-explicit-any
+        ;(dto as any)[key] = (source as any)[key]
+      }
+    })
+
     return dto
   }
 

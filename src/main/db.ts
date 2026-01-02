@@ -4,11 +4,13 @@ import { app } from 'electron'
 import fs from 'fs'
 
 export async function runMigrations(): Promise<void> {
-  const dbPath = path.join(app.getPath('userData'), 'kameti.db')
-  const dbUrl = `file:${dbPath}`
+  let dbUrl = process.env.DATABASE_URL
 
-  // Set DATABASE_URL for Prisma Client and Migrator
-  process.env.DATABASE_URL = dbUrl
+  if (!dbUrl) {
+    const dbPath = path.join(app.getPath('userData'), 'kameti.db')
+    dbUrl = `file:${dbPath}`
+    process.env.DATABASE_URL = dbUrl
+  }
 
   const isDev = !app.isPackaged
 

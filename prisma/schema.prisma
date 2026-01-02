@@ -69,7 +69,7 @@ model Admin{
   email String @unique
   phone String? @unique
   profile_picture String? @map("profile_picture")
-  password String
+  password_hash String @map("password_hash")
   created_at DateTime @default(now()) @map("created_at")
   updated_at DateTime @updatedAt @map("updated_at")
 

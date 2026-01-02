@@ -18,7 +18,7 @@ export const adminRegisterDto = z.object({
         message: 'Phone number must be in the format +91 XXXXXXXXXX'
       }
     ),
-  password: z
+  password_hash: z
     .string()
     .min(8, 'Password must be at least 8 characters long')
     .regex(/[A-Z]/, 'Password must contain at least one uppercase letter')

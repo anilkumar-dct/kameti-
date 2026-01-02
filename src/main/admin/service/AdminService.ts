@@ -6,6 +6,7 @@ import { adminUpdateDto, AdminUpdateDto } from '../schema/adminUpdate.dto'
 import { adminRegisterDto, AdminRegisterDto } from '../schema/adminRegister.dto'
 import { ValidationUtils } from '../../common/utils/ValidationUtils'
 import { MapperUtils } from '../../common/utils/MapperUtils'
+import * as bcrypt from 'bcrypt'
 
 /**
  * Service class for handling Admin-related business logic.
@@ -22,6 +23,9 @@ export class AdminService {
     try {
       const validatedData = ValidationUtils.validate(adminRegisterDto, data)
       if (!validatedData.success) return validatedData.error
+
+      const hashedPassword = await bcrypt.hash(validatedData.data.password_hash, 10)
+      validatedData.data.password_hash = hashedPassword
 
       const admin = await this.adminRepo.create(validatedData.data)
       const adminDto = MapperUtils.toDto(admin, AdminResponseDto)
@@ -43,7 +47,9 @@ export class AdminService {
       if (!validatedData.success) return validatedData.error
 
       const admin = await this.adminRepo.update(id, validatedData.data)
-      return ResponseFactory.success(admin, 'OK', 'Admin Updated Successfully')
+      const adminDto = MapperUtils.toDto(admin, AdminResponseDto)
+
+      return ResponseFactory.success(adminDto, 'OK', 'Admin Updated Successfully')
     } catch (error) {
       return ResponseFactory.exception(error as Error)
     }

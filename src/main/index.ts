@@ -1,11 +1,15 @@
 import dotenv from 'dotenv'
 dotenv.config({ path: '.env.development' })
 import { app, shell, BrowserWindow, ipcMain } from 'electron'
-import path from 'path'
-const dbPath = path.join(app.getPath('userData'), 'kameti.db')
-process.env.DATABASE_URL = `file:${dbPath}`
-import { join } from 'path'
+import path, { join } from 'path'
 import { electronApp, optimizer, is } from '@electron-toolkit/utils'
+
+// Only override DATABASE_URL in production or if not set
+if (!process.env.DATABASE_URL || !is.dev) {
+  const dbPath = path.join(app.getPath('userData'), 'kameti.db')
+  process.env.DATABASE_URL = `file:${dbPath}`
+}
+
 import icon from '../../resources/icon.png?asset'
 import { initUpdater } from './updater'
 import { runMigrations } from './db'
