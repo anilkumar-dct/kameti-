@@ -15,10 +15,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  DEFULTER
+}
 // Prisma requires at least one model to generate the client
 model User {
-  id    Int     @id @default(autoincrement())
-  email String? @unique
+  id              Int        @id @default(autoincrement())
+  name            String
+  father_name     String?
+  phone_no        String?    @unique
+  profile_image   String?
+  status          UserStatus @default(INACTIVE)
+  aadhaar_number  String?
+  reference       Int?
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Self-referencing relation
+  referrer        User?      @relation("UserReference", fields: [reference], references: [id])
+  referrals       User[]     @relation("UserReference")
 }
 
 // Define the enum for Kameti status
@@ -63,15 +81,16 @@ model KametiMonthlyWithdrawal {
   @@map("kameti_monthly_withdrawal")
 }
 
-model Admin{
-  id    Int     @id @default(autoincrement())
-  full_name String @map("full_name")
-  email String @unique
-  phone String? @unique
-  profile_picture String? @map("profile_picture")
-  password_hash String @map("password_hash")
-  created_at DateTime @default(now()) @map("created_at")
-  updated_at DateTime @updatedAt @map("updated_at")
+
+model Admin {
+  id              Int      @id @default(autoincrement())
+  full_name       String   @map("full_name")
+  email           String   @unique
+  phone           String?  @unique
+  profile_picture String?  @map("profile_picture")
+  password_hash   String   @map("password_hash")
+  created_at      DateTime @default(now()) @map("created_at")
+  updated_at      DateTime @updatedAt @map("updated_at")
 
   @@map("admin")
 }

@@ -5,8 +5,11 @@
     "src/renderer/src/**/*",
     "src/renderer/src/**/*.tsx",
     "src/preload/*.d.ts",
+    "src/main/db.ts",
+    "src/main/index.ts",
+    "src/main/env.d.ts",
     "src/main/**/*.schema.ts",
-    "src/main/**/*.service.ts"
+    "src/main/**/*.service.ts",
   ],
   "compilerOptions": {
     "composite": true,
@@ -15,6 +18,9 @@
     "paths": {
       "@renderer/*": [
         "src/renderer/src/*"
+      ],
+      "utils/*": [
+        "src/utils/*"
       ]
     }
   }
