@@ -4,6 +4,8 @@ import { Kameti } from '@prisma/client'
 import { KametiCreateDto } from '../main/kameti/schema/kametiCreate.dto'
 import { KametiUpdateDto } from '../main/kameti/schema/kametiUpdate.dto'
 import { KametiQueryDto } from '../main/kameti/schema/kametiQuery.dto'
+import { AdminRegisterDto } from '../main/admin/schema/adminRegister.dto'
+import { AdminUpdateDto } from '../main/admin/schema/adminUpdate.dto'
 
 // Custom APIs for renderer
 const api = {
@@ -14,6 +16,10 @@ const api = {
     create: (data: KametiCreateDto) => ipcRenderer.invoke('kameti:create', data),
     update: (id: number, data: KametiUpdateDto) => ipcRenderer.invoke('kameti:update', id, data),
     delete: (id: number) => ipcRenderer.invoke('kameti:delete', id)
+  },
+  admin: {
+    register: (data: AdminRegisterDto) => ipcRenderer.invoke('admin:register', data),
+    update: (id: number, data: AdminUpdateDto) => ipcRenderer.invoke('admin:update', id, data)
   }
 }
 

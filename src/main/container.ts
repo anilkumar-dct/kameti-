@@ -2,6 +2,9 @@ import { PrismaClient } from '@prisma/client'
 import { KametiRepo } from './kameti/repository/implementation/Kameti.Repo'
 import { KametiService } from './kameti/service/KametiService'
 import { KametiController } from './kameti/controller/kameti.controller'
+import { AdminRepo } from './admin/repository/implementation/Admin.Repo'
+import { AdminService } from './admin/service/AdminService'
+import { AdminController } from './admin/controller/Admin.Controller'
 
 /**
  * Composition Root (DI Container)
@@ -15,9 +18,12 @@ export const prisma = new PrismaClient()
 
 // 2. Initialize Repositories (Inject dependencies)
 const kametiRepo = new KametiRepo(prisma)
+const adminRepo = new AdminRepo(prisma)
 
 // 3. Initialize Services (Inject dependencies)
 const kametiService = new KametiService(kametiRepo)
+const adminService = new AdminService(adminRepo)
 
 // 4. Initialize Controllers (Sets up IPC listeners automatically)
 export const kametiController = new KametiController(kametiService)
+export const adminController = new AdminController(adminService)

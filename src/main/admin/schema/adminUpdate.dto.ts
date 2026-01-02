@@ -1,14 +1,16 @@
 import z from 'zod'
 
-export const adminCreateDto = z.object({
-  full_name: z.string().min(3, 'Full name must be at least 3 characters long'),
-  email: z.string().refine((val) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val), {
-    message: 'Invalid email format'
-  }),
+export const adminUpdateDto = z.object({
+  full_name: z.string().min(3, 'Full name must be at least 3 characters long').optional(),
+  email: z
+    .string()
+    .refine((val) => /^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/.test(val), {
+      message: 'Invalid email format'
+    })
+    .optional(),
   profile_picture: z.string().optional(),
   phone: z
     .string()
-    .optional()
     .refine(
       (val) => {
         if (!val) return true
@@ -17,7 +19,8 @@ export const adminCreateDto = z.object({
       {
         message: 'Phone number must be in the format +91 XXXXXXXXXX'
       }
-    ),
+    )
+    .optional(),
   password: z
     .string()
     .min(8, 'Password must be at least 8 characters long')
@@ -25,6 +28,7 @@ export const adminCreateDto = z.object({
     .regex(/[a-z]/, 'Password must contain at least one lowercase letter')
     .regex(/[0-9]/, 'Password must contain at least one number')
     .regex(/[^A-Za-z0-9]/, 'Password must contain at least one special character')
+    .optional()
 })
 
-export type AdminCreateDto = z.infer<typeof adminCreateDto>
+export type AdminUpdateDto = z.infer<typeof adminUpdateDto>

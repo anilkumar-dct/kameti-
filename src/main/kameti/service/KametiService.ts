@@ -6,6 +6,8 @@ import { kametiCreateDto, KametiCreateDto } from '../schema/kametiCreate.dto'
 import { kametiUpdateDto, KametiUpdateDto } from '../schema/kametiUpdate.dto'
 import { KametiQueryDto } from '../schema/kametiQuery.dto'
 import { PaginatedResponse } from '../../common/interfaces/IPaginatedResponse'
+import { ValidationUtils } from '../../common/utils/ValidationUtils'
+import { findByIdDto } from '../../common/dto/findById.dto'
 
 /**
  * Service class handling the business logic for Kameti operations.
@@ -40,13 +42,13 @@ export class KametiService {
    */
   async findById(id: number): Promise<ApiResponse<Kameti | null>> {
     try {
-      if (!id || id <= 0) {
-        return ResponseFactory.error('Invalid ID provided', 'BAD_REQUEST', 'Validation failed')
-      }
-      const kameti = await this.kametiRepo.findById(id)
+      const validatedData = ValidationUtils.validate(findByIdDto, { id })
+      if (!validatedData.success) return validatedData.error
+
+      const kameti = await this.kametiRepo.findById(validatedData.data.id)
       if (!kameti) {
         return ResponseFactory.error(
-          'Kameti not found with id: ' + id,
+          'Kameti not found with id: ' + validatedData.data.id,
           'NOT_FOUND',
           'Record not found'
         )
@@ -79,18 +81,10 @@ export class KametiService {
    */
   async create(data: KametiCreateDto): Promise<ApiResponse<Kameti>> {
     try {
-      const parsedData = kametiCreateDto.safeParse(data)
+      const validatedData = ValidationUtils.validate(kametiCreateDto, data)
+      if (!validatedData.success) return validatedData.error
 
-      if (!parsedData.success) {
-        return ResponseFactory.error(
-          'Data Validation Failed',
-          'BAD_REQUEST',
-          parsedData.error.message
-        )
-      }
-
-      const validatedData = parsedData.data
-      const kameti = await this.kametiRepo.create(validatedData)
+      const kameti = await this.kametiRepo.create(validatedData.data)
 
       if (!kameti) {
         return ResponseFactory.error('Failed to create kameti', 'SERVER_ERROR', 'Unknown error')
@@ -119,15 +113,8 @@ export class KametiService {
    */
   async update(id: number, data: KametiUpdateDto): Promise<ApiResponse<Kameti>> {
     try {
-      const parsedData = kametiUpdateDto.safeParse(data)
-      if (!parsedData.success) {
-        return ResponseFactory.error(
-          'Data Validation Failed',
-          'BAD_REQUEST',
-          parsedData.error.message
-        )
-      }
-      const validatedData = parsedData.data
+      const validatedData = ValidationUtils.validate(kametiUpdateDto, data)
+      if (!validatedData.success) return validatedData.error
 
       const existingKameti = await this.kametiRepo.findById(id)
       if (!existingKameti) {
@@ -138,7 +125,7 @@ export class KametiService {
         )
       }
 
-      const kameti = await this.kametiRepo.update(id, validatedData)
+      const kameti = await this.kametiRepo.update(id, validatedData.data)
 
       if (!kameti) {
         return ResponseFactory.error('Failed to update kameti', 'SERVER_ERROR', 'Unknown error')

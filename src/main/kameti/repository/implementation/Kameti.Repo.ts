@@ -13,10 +13,7 @@ import { PaginatedResponse } from '../../../common/interfaces/IPaginatedResponse
  * Inherits `findById` and `create` from the generic `CommonRepo`.
  * Implements specific logic for `findAll`, `findOne`, `update`, and `delete`.
  */
-export class KametiRepo
-  extends CommonRepo<Kameti, KametiCreateDto, KametiQueryDto>
-  implements IKametiRepo
-{
+export class KametiRepo extends CommonRepo<Kameti, KametiCreateDto> implements IKametiRepo {
   /**
    * Initializes the repository with an injected Prisma client.
    * Passes `prisma.kameti` to the generic `CommonRepo` superclass.
