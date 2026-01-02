@@ -20,7 +20,7 @@ export class UserResponseDto {
   /** Profile image path (optional) */
   profile_image?: string
 
-  status?: UserStatus 
+  status?: UserStatus
 
   /** Aadhaar number (optional) */
   aadhaar_number?: string

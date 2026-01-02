@@ -1,7 +1,6 @@
 import { PrismaClient, User } from '@prisma/client'
 import { UserCreateDto } from '../../schema/userCreate.dto'
 import { UserUpdateDto } from '../../schema/userUpdate.dto'
-import { UserResponseDto } from '../../schema/UserResponse.dto'
 import { IUserRepo } from '../interface/IUser.repo'
 import { CommonRepo } from '../../../common/CommonRepo/Common.Repo'
 import { PaginatedResponse } from '../../../common/interfaces/IPaginatedResponse'
@@ -56,11 +55,11 @@ export class UserRepository extends CommonRepo<User, UserCreateDto, void> implem
    * @param filter - Partial User object with filter fields.
    * @returns The matching user or null if not found.
    */
-  async findOne(filter: Partial<User>): Promise<UserResponseDto | null> {
+  async findOne(filter: Partial<User>): Promise<User | null> {
     const user = await this.prisma.user.findFirst({
       where: filter
     })
-    return user ? (user as UserResponseDto) : null
+    return user
   }
 
   /**
@@ -69,12 +68,12 @@ export class UserRepository extends CommonRepo<User, UserCreateDto, void> implem
    * @param data - The partial data to update.
    * @returns The updated user record.
    */
-  async update(id: number, data: Partial<UserUpdateDto>): Promise<UserResponseDto> {
+  async update(id: number, data: Partial<UserUpdateDto>): Promise<User> {
     const user = await this.prisma.user.update({
       where: { id },
       data
     })
-    return user as UserResponseDto
+    return user
   }
 
   /**
@@ -88,7 +87,7 @@ export class UserRepository extends CommonRepo<User, UserCreateDto, void> implem
         where: { id }
       })
       return true
-    } catch (error) {
+    } catch {
       return false
     }
   }

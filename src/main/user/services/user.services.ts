@@ -4,7 +4,6 @@ import { ResponseFactory } from '../../common/ApiResponse/Response.Factory'
 import { IUserRepo } from '../repository/interface/IUser.repo'
 import { UserCreateDto, userCreateDto } from '../schema/userCreate.dto'
 import { UserUpdateDto, userUpdateDto } from '../schema/userUpdate.dto'
-import { UserResponseDto } from '../schema/UserResponse.dto'
 import { PaginatedResponse } from '../../common/interfaces/IPaginatedResponse'
 
 /**
@@ -23,11 +22,11 @@ export class UserService {
    * Fetches all User records with optional filtering and pagination.
    * @returns A promise resolving to a success or error ApiResponse with paginated data.
    */
-  async findAll(): Promise<ApiResponse<PaginatedResponse<UserResponseDto>>> {
+  async findAll(): Promise<ApiResponse<PaginatedResponse<User>>> {
     try {
       const result = await this.userRepo.findAll()
       return ResponseFactory.success(
-        result as PaginatedResponse<UserResponseDto>,
+        result as PaginatedResponse<User>,
         'OK',
         'Users Fetched Successfully.'
       )
@@ -41,7 +40,7 @@ export class UserService {
    * @param id - The ID of the User to find.
    * @returns A promise resolving to an ApiResponse with the record or an error.
    */
-  async findById(id: number): Promise<ApiResponse<UserResponseDto | null>> {
+  async findById(id: number): Promise<ApiResponse<User | null>> {
     try {
       if (!id || id <= 0) {
         return ResponseFactory.error('Invalid ID provided', 'BAD_REQUEST', 'Validation failed')
@@ -54,7 +53,7 @@ export class UserService {
           'Record not found'
         )
       }
-      return ResponseFactory.success(user as UserResponseDto, 'OK', 'User Fetched Successfully.')
+      return ResponseFactory.success(user, 'OK', 'User Fetched Successfully.')
     } catch (error) {
       return ResponseFactory.exception(error as Error)
     }
@@ -65,7 +64,7 @@ export class UserService {
    * @param filter - Partial User object with filter fields.
    * @returns A promise resolving to an ApiResponse with the record or an error.
    */
-  async findOne(filter: Partial<User>): Promise<ApiResponse<UserResponseDto>> {
+  async findOne(filter: Partial<User>): Promise<ApiResponse<User>> {
     try {
       const user = await this.userRepo.findOne(filter)
       if (!user) {
@@ -86,7 +85,7 @@ export class UserService {
    * @param data - The user data to create.
    * @returns A promise resolving to an ApiResponse with the new record or validation errors.
    */
-  async create(data: UserCreateDto): Promise<ApiResponse<UserResponseDto>> {
+  async create(data: UserCreateDto): Promise<ApiResponse<User>> {
     try {
       // Validate data using Zod schema
       const parsedData = userCreateDto.safeParse(data)
@@ -130,11 +129,7 @@ export class UserService {
         return ResponseFactory.error('Failed to create user', 'SERVER_ERROR', 'Unknown error')
       }
 
-      return ResponseFactory.success(
-        user as UserResponseDto,
-        'CREATED',
-        'User Created Successfully.'
-      )
+      return ResponseFactory.success(user, 'CREATED', 'User Created Successfully.')
     } catch (error) {
       return ResponseFactory.exception(error as Error)
     }
@@ -146,7 +141,7 @@ export class UserService {
    * @param data - The partial data to update.
    * @returns A promise resolving to an ApiResponse with the updated record or an error.
    */
-  async update(id: number, data: UserUpdateDto): Promise<ApiResponse<UserResponseDto>> {
+  async update(id: number, data: UserUpdateDto): Promise<ApiResponse<User>> {
     try {
       if (!id || id <= 0) {
         return ResponseFactory.error('Invalid ID provided', 'BAD_REQUEST', 'Validation failed')

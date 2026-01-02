@@ -3,7 +3,6 @@ import { UserService } from '../services/user.services'
 import { ApiResponse } from '../../common/ApiResponse/IApiResponse'
 import { UserCreateDto } from '../schema/userCreate.dto'
 import { UserUpdateDto } from '../schema/userUpdate.dto'
-import { UserResponseDto } from '../schema/UserResponse.dto'
 import { User } from '@prisma/client'
 import { PaginatedResponse } from '../../common/interfaces/IPaginatedResponse'
 
@@ -35,30 +34,19 @@ export class UserController {
 
   // --- Handlers ---
 
-  private async findAll(
-    _: IpcMainInvokeEvent
-  ): Promise<ApiResponse<PaginatedResponse<UserResponseDto>>> {
+  private async findAll(): Promise<ApiResponse<PaginatedResponse<User>>> {
     return await this.userService.findAll()
   }
 
-  private async findById(
-    _: IpcMainInvokeEvent,
-    id: number
-  ): Promise<ApiResponse<UserResponseDto | null>> {
+  private async findById(_: IpcMainInvokeEvent, id: number): Promise<ApiResponse<User | null>> {
     return await this.userService.findById(id)
   }
 
-  private async findOne(
-    _: IpcMainInvokeEvent,
-    filter: Partial<User>
-  ): Promise<ApiResponse<UserResponseDto>> {
+  private async findOne(_: IpcMainInvokeEvent, filter: Partial<User>): Promise<ApiResponse<User>> {
     return await this.userService.findOne(filter)
   }
 
-  private async create(
-    _: IpcMainInvokeEvent,
-    data: UserCreateDto
-  ): Promise<ApiResponse<UserResponseDto>> {
+  private async create(_: IpcMainInvokeEvent, data: UserCreateDto): Promise<ApiResponse<User>> {
     return await this.userService.create(data)
   }
 
@@ -66,7 +54,7 @@ export class UserController {
     _: IpcMainInvokeEvent,
     id: number,
     data: UserUpdateDto
-  ): Promise<ApiResponse<UserResponseDto>> {
+  ): Promise<ApiResponse<User>> {
     return await this.userService.update(id, data)
   }
 
