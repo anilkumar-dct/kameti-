@@ -11,7 +11,7 @@
  */
 export interface PrismaDelegate<T, CreateInput> {
   /** Finds multiple records matching the criteria. */
-  findMany(): Promise<T[]>
+  findMany(args?: unknown): Promise<T[]>
   /** Finds a unique record by unique field (usually ID). */
   findUnique(args: { where: { id: number } }): Promise<T | null>
   /** Creates a new record. */

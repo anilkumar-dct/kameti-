@@ -3,11 +3,12 @@ import { electronAPI } from '@electron-toolkit/preload'
 import { Kameti } from '@prisma/client'
 import { KametiCreateDto } from '../main/kameti/schema/kametiCreate.dto'
 import { KametiUpdateDto } from '../main/kameti/schema/kametiUpdate.dto'
+import { KametiQueryDto } from '../main/kameti/schema/kametiQuery.dto'
 
 // Custom APIs for renderer
 const api = {
   kameti: {
-    findAll: () => ipcRenderer.invoke('kameti:findAll'),
+    findAll: (query?: KametiQueryDto) => ipcRenderer.invoke('kameti:findAll', query),
     findById: (id: number) => ipcRenderer.invoke('kameti:findById', id),
     findOne: (filter: Partial<Kameti>) => ipcRenderer.invoke('kameti:findOne', filter),
     create: (data: KametiCreateDto) => ipcRenderer.invoke('kameti:create', data),

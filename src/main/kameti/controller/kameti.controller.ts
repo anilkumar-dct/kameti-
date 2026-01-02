@@ -5,6 +5,8 @@ import { KametiResponseDto } from '../schema/kametiRespone.dto'
 import { Kameti } from '@prisma/client'
 import { KametiCreateDto } from '../schema/kametiCreate.dto'
 import { KametiUpdateDto } from '../schema/kametiUpdate.dto'
+import { KametiQueryDto } from '../schema/kametiQuery.dto'
+import { PaginatedResponse } from '../../common/interfaces/IPaginatedResponse'
 
 /**
  * Controller class responsible for handling IPC requests for the Kameti module.
@@ -34,8 +36,11 @@ export class KametiController {
 
   // --- Handlers ---
 
-  private async findAll(): Promise<ApiResponse<KametiResponseDto[]>> {
-    return await this.kametiService.findAll()
+  private async findAll(
+    _: IpcMainInvokeEvent,
+    query?: KametiQueryDto
+  ): Promise<ApiResponse<PaginatedResponse<KametiResponseDto>>> {
+    return await this.kametiService.findAll(query)
   }
 
   private async findById(

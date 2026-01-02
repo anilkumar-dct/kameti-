@@ -4,13 +4,14 @@ import { KametiResponseDto } from '../main/kameti/schema/kametiRespone.dto'
 import { KametiCreateDto } from '../main/kameti/schema/kametiCreate.dto'
 import { KametiUpdateDto } from '../main/kameti/schema/kametiUpdate.dto'
 import { Kameti } from '@prisma/client'
+import { KametiQueryDto } from '../main/kameti/schema/kametiQuery.dto'
 
 declare global {
   interface Window {
     electron: ElectronAPI
     api: {
       kameti: {
-        findAll: () => Promise<ApiResponse<KametiResponseDto[]>>
+        findAll: (query?: KametiQueryDto) => Promise<ApiResponse<KametiResponseDto[]>>
         findById: (id: number) => Promise<ApiResponse<KametiResponseDto>>
         findOne: (filter: Partial<Kameti>) => Promise<ApiResponse<KametiResponseDto>>
         create: (data: KametiCreateDto) => Promise<ApiResponse<KametiResponseDto>>

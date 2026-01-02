@@ -5,6 +5,8 @@ import { IKametiRepo } from '../repository/interface/IKameti.Repo'
 import { kametiCreateDto, KametiCreateDto } from '../schema/kametiCreate.dto'
 import { KametiResponseDto } from '../schema/kametiRespone.dto'
 import { kametiUpdateDto, KametiUpdateDto } from '../schema/kametiUpdate.dto'
+import { KametiQueryDto } from '../schema/kametiQuery.dto'
+import { PaginatedResponse } from '../../common/interfaces/IPaginatedResponse'
 
 /**
  * Service class handling the business logic for Kameti operations.
@@ -19,13 +21,16 @@ export class KametiService {
   constructor(private kametiRepo: IKametiRepo) {}
 
   /**
-   * Fetches all Kameti records with standardized response formatting.
-   * @returns A promise resolving to a success or error ApiResponse.
+   * Fetches all Kameti records with optional filtering, pagination, and sorting.
+   * @param query - Optional query parameters for filtering.
+   * @returns A promise resolving to a success or error ApiResponse with paginated data.
    */
-  async findAll(): Promise<ApiResponse<KametiResponseDto[]>> {
+  async findAll(
+    query?: KametiQueryDto
+  ): Promise<ApiResponse<PaginatedResponse<KametiResponseDto>>> {
     try {
-      const kameti = await this.kametiRepo.findAll()
-      return ResponseFactory.success(kameti, 'OK', 'Kameti Fetched Successfully.')
+      const result = await this.kametiRepo.findAll(query)
+      return ResponseFactory.success(result, 'OK', 'Kameti Fetched Successfully.')
     } catch (error) {
       return ResponseFactory.exception(error as Error)
     }

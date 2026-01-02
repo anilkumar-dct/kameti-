@@ -2,7 +2,8 @@ import { Kameti } from '@prisma/client'
 import { KametiCreateDto } from '../../schema/kametiCreate.dto'
 import { KametiResponseDto } from '../../schema/kametiRespone.dto'
 import { KametiUpdateDto } from '../../schema/kametiUpdate.dto'
-import { ICommonRepo } from '../../../common/CommonRepo/ICommon.Repo'
+import { ICommonRepo } from '../../../common/interfaces/ICommon.Repo'
+import { KametiQueryDto } from '../../schema/kametiQuery.dto'
 
 /**
  * Interface defining the contract for Kameti data access operations.
@@ -11,7 +12,7 @@ import { ICommonRepo } from '../../../common/CommonRepo/ICommon.Repo'
  * and adds specific methods for Finding by filter, Updating, and Deleting
  * which require specific Kameti logic/types.
  */
-export interface IKametiRepo extends ICommonRepo<Kameti, KametiCreateDto> {
+export interface IKametiRepo extends ICommonRepo<Kameti, KametiCreateDto, KametiQueryDto> {
   /** Finds a single record matching specific scalar filters (e.g. status, title). */
   findOne(filter: Partial<Kameti>): Promise<KametiResponseDto | null>
   /** Updates an existing Kameti record. */
