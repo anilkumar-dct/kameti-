@@ -54,7 +54,7 @@ export class UserRepository
     return await this.prisma.user.create({ data })
   }
 
-  /**
+  /***
    * Retrieves a single User record matching specific filter criteria.
    * @param filter - Partial User object with filter fields.
    * @returns The matching user or null if not found.
