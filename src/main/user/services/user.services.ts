@@ -1,87 +1,220 @@
-import { imageUploadService } from '../../../utils/imageUpload'
-import { userRepository } from '../repository/user.repository'
+import { User } from '@prisma/client'
+import { ApiResponse } from '../../common/ApiResponse/IApiResponse'
+import { ResponseFactory } from '../../common/ApiResponse/Response.Factory'
+import { IUserRepo } from '../repository/interface/IUser.repo'
+import { UserCreateDto, userCreateDto } from '../schema/userCreate.dto'
+import { UserUpdateDto, userUpdateDto } from '../schema/userUpdate.dto'
+import { UserResponseDto } from '../schema/UserResponse.dto'
+import { PaginatedResponse } from '../../common/interfaces/IPaginatedResponse'
 
+/**
+ * Service class handling the business logic for User operations.
+ * Acts as a bridge between IPC handlers and the Data Access Layer (Repository).
+ * Standardizes outputs into ApiResponse objects.
+ */
 export class UserService {
- 
+  /**
+   * Initializes the service with an injected repository.
+   * @param userRepo - An implementation of the IUserRepo interface.
+   */
+  constructor(private userRepo: IUserRepo) {}
 
-  async createUser(data: any) {
-    if (!data.phone_no && !data.reference) {
-      throw new Error('Phone number is required when user is not created via reference')
+  /**
+   * Fetches all User records with optional filtering and pagination.
+   * @returns A promise resolving to a success or error ApiResponse with paginated data.
+   */
+  async findAll(): Promise<ApiResponse<PaginatedResponse<UserResponseDto>>> {
+    try {
+      const result = await this.userRepo.findAll()
+      return ResponseFactory.success(result as PaginatedResponse<UserResponseDto>, 'OK', 'Users Fetched Successfully.')
+    } catch (error) {
+      return ResponseFactory.exception(error as Error)
     }
-
-    const findUserById = await userRepository.findById(data.reference)
-
-    if (!findUserById) {
-      throw new Error('Reference user not found')
-    }
-
-    let profileImagePath: string | null = null
-
-    if (data.profile_image) {
-      try {
-        if (!imageUploadService.isValidImage(data.profile_image)) {
-          throw new Error('Invalid image format')
-        }
-
-        const { filepath } = imageUploadService.uploadImage(
-          'profiles',
-          data.name,
-          data.profile_image,
-          '.jpg'
-        )
-        profileImagePath = filepath
-      } catch (error) {
-        console.error('Error uploading profile image:', error)
-        throw new Error(`Image upload failed: ${error}`)
-      }
-    }
-
-    const userData: any = {
-      name: data.name,
-      father_name: data.father_name,
-      phone_no: data.phone_no,
-      profile_image: profileImagePath,
-      status: data.status,
-      aadhaar_number: data.aadhaar_number,
-      reference: data.reference
-    }
-
-    return userRepository.create(userData)
   }
 
-  async deleteUser(id: number) {
-    await imageUploadService.deleteUserImages('profiles', id)
-    return await userRepository.delete(id)
-  }
-  
-  async updateUser(id: number, data: any) {
-    const existingUser = await userRepository.findById(id)
-    if (!existingUser) {
-      throw new Error('User not found')
-    }
-    const updatedData: any = { ...data }
-
-    if (data.profile_image) {
-      try {
-        if (!imageUploadService.isValidImage(data.profile_image)) {
-          throw new Error('Invalid image format')
-        }
-        imageUploadService.deleteImage('profiles', existingUser.profile_image || '')
-        const { filepath } = imageUploadService.uploadImage(
-          'profiles',
-          data.name || existingUser.name,
-          data.profile_image,
-
-          '.jpg'
-        )
-        updatedData.profile_image = filepath
-      } catch (error) {
-        console.error('Error uploading profile image:', error)
-        throw new Error(`Image upload failed: ${error}`)
+  /**
+   * Fetches a specific User by ID with validation and error handling.
+   * @param id - The ID of the User to find.
+   * @returns A promise resolving to an ApiResponse with the record or an error.
+   */
+  async findById(id: number): Promise<ApiResponse<UserResponseDto | null>> {
+    try {
+      if (!id || id <= 0) {
+        return ResponseFactory.error('Invalid ID provided', 'BAD_REQUEST', 'Validation failed')
       }
+      const user = await this.userRepo.findById(id)
+      if (!user) {
+        return ResponseFactory.error(
+          'User not found with id: ' + id,
+          'NOT_FOUND',
+          'Record not found'
+        )
+      }
+      return ResponseFactory.success(user as UserResponseDto, 'OK', 'User Fetched Successfully.')
+    } catch (error) {
+      return ResponseFactory.exception(error as Error)
     }
-    return userRepository.update(id, updatedData)
+  }
+
+  /**
+   * Fetches a single User by filter criteria.
+   * @param filter - Partial User object with filter fields.
+   * @returns A promise resolving to an ApiResponse with the record or an error.
+   */
+  async findOne(filter: Partial<User>): Promise<ApiResponse<UserResponseDto>> {
+    try {
+      const user = await this.userRepo.findOne(filter)
+      if (!user) {
+        return ResponseFactory.error(
+          'User not found with filter: ' + JSON.stringify(filter),
+          'NOT_FOUND',
+          'Record not found'
+        )
+      }
+      return ResponseFactory.success(user, 'OK', 'User Fetched Successfully.')
+    } catch (error) {
+      return ResponseFactory.exception(error as Error)
+    }
+  }
+
+  /**
+   * Creates a new User record with image upload and reference validation.
+   * @param data - The user data to create.
+   * @returns A promise resolving to an ApiResponse with the new record or validation errors.
+   */
+  async create(data: UserCreateDto): Promise<ApiResponse<UserResponseDto>> {
+    try {
+      // Validate data using Zod schema
+      const parsedData = userCreateDto.safeParse(data)
+
+      if (!parsedData.success) {
+        return ResponseFactory.error(
+          'Data Validation Failed',
+          'BAD_REQUEST',
+          parsedData.error.message
+        )
+      }
+
+      const validatedData = parsedData.data
+
+      // Validate reference user exists if provided
+      if (validatedData.reference) {
+        const referenceUser = await this.userRepo.findById(validatedData.reference)
+        if (!referenceUser) {
+          return ResponseFactory.error(
+            'Reference user not found with id: ' + validatedData.reference,
+            'NOT_FOUND',
+            'Invalid reference'
+          )
+        }
+      }
+
+      // Prepare user data (profile_image should be handled separately via file upload endpoints)
+      const userData: Partial<UserCreateDto> = {
+        name: validatedData.name,
+        father_name: validatedData.father_name,
+        phone_no: validatedData.phone_no,
+        profile_image: (validatedData as any).profile_image,
+        status: validatedData.status,
+        aadhaar_number: validatedData.aadhaar_number,
+        reference: validatedData.reference
+      }
+
+      // Create user
+      const user = await this.userRepo.create(userData as UserCreateDto)
+
+      if (!user) {
+        return ResponseFactory.error('Failed to create user', 'SERVER_ERROR', 'Unknown error')
+      }
+
+      return ResponseFactory.success(user as UserResponseDto, 'CREATED', 'User Created Successfully.')
+    } catch (error) {
+      return ResponseFactory.exception(error as Error)
+    }
+  }
+
+  /**
+   * Updates an existing User record with optional image handling.
+   * @param id - The ID of the user to update.
+   * @param data - The partial data to update.
+   * @returns A promise resolving to an ApiResponse with the updated record or an error.
+   */
+  async update(
+    id: number,
+    data: UserUpdateDto
+  ): Promise<ApiResponse<UserResponseDto>> {
+    try {
+      if (!id || id <= 0) {
+        return ResponseFactory.error('Invalid ID provided', 'BAD_REQUEST', 'Validation failed')
+      }
+
+      // Validate data using Zod schema
+      const parsedData = userUpdateDto.safeParse(data)
+
+      if (!parsedData.success) {
+        return ResponseFactory.error(
+          'Data Validation Failed',
+          'BAD_REQUEST',
+          parsedData.error.message
+        )
+      }
+
+      const validatedData = parsedData.data
+
+      // Check if user exists
+      const existingUser = await this.userRepo.findById(id)
+      if (!existingUser) {
+        return ResponseFactory.error('User not found with id: ' + id, 'NOT_FOUND', 'Record not found')
+      }
+
+      // Prepare update data (profile_image should be handled separately via file upload endpoints)
+      const updateData: Partial<UserUpdateDto> = { ...validatedData }
+
+      // Include profile_image if provided
+      if ((validatedData as any).profile_image) {
+        ;(updateData as any).profile_image = (validatedData as any).profile_image
+      }
+
+      // Update user
+      const updatedUser = await this.userRepo.update(id, updateData as UserUpdateDto)
+
+      if (!updatedUser) {
+        return ResponseFactory.error('Failed to update user', 'SERVER_ERROR', 'Unknown error')
+      }
+
+      return ResponseFactory.success(updatedUser, 'OK', 'User Updated Successfully.')
+    } catch (error) {
+      return ResponseFactory.exception(error as Error)
+    }
+  }
+
+  /**
+   * Deletes a User record.
+   * @param id - The ID of the user to delete.
+   * @returns A promise resolving to an ApiResponse with success or error.
+   */
+  async delete(id: number): Promise<ApiResponse<boolean>> {
+    try {
+      if (!id || id <= 0) {
+        return ResponseFactory.error('Invalid ID provided', 'BAD_REQUEST', 'Validation failed')
+      }
+
+      // Check if user exists
+      const existingUser = await this.userRepo.findById(id)
+      if (!existingUser) {
+        return ResponseFactory.error('User not found with id: ' + id, 'NOT_FOUND', 'Record not found')
+      }
+
+      // Delete user
+      const deletedSuccessfully = await this.userRepo.delete(id)
+
+      if (!deletedSuccessfully) {
+        return ResponseFactory.error('Failed to delete user', 'SERVER_ERROR', 'Unknown error')
+      }
+
+      return ResponseFactory.success(true, 'OK', 'User Deleted Successfully.')
+    } catch (error) {
+      return ResponseFactory.exception(error as Error)
+    }
   }
 }
-
-export const userServices = new UserService()

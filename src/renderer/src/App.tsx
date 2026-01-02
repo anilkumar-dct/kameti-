@@ -1,5 +1,7 @@
 import Versions from './components/Versions'
 import UpdateNotification from './components/UpdateNotification'
+// Side-effect import: logs and exposes `runCreateUserTest` on window for manual testing
+import './components/test'
 
 function App(): React.JSX.Element {
   return (
