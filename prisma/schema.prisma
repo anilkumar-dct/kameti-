@@ -15,10 +15,28 @@ datasource db {
   url      = env("DATABASE_URL")
 }
 
+
+enum UserStatus {
+  ACTIVE
+  INACTIVE
+  DEFULTER
+}
 // Prisma requires at least one model to generate the client
 model User {
-  id    Int     @id @default(autoincrement())
-  email String? @unique
+  id              Int        @id @default(autoincrement())
+  name            String
+  father_name     String?
+  phone_no        String?    @unique
+  profile_image   String?
+  status          UserStatus @default(INACTIVE)
+  aadhaar_number  String?
+  reference       Int?
+  created_at      DateTime   @default(now())
+  updated_at      DateTime   @updatedAt
+
+  // Self-referencing relation
+  referrer        User?      @relation("UserReference", fields: [reference], references: [id])
+  referrals       User[]     @relation("UserReference")
 }
 
 // Define the enum for Kameti status
@@ -35,11 +53,11 @@ model Kameti {
   months    Int
   installment Float
   status    KametiStatus             @default(INACTIVE)
-  createdAt DateTime                 @default(now())
-  updatedAt DateTime                 @updatedAt
+  created_at DateTime                 @default(now()) @map("created_at")
+  updated_at DateTime                 @updatedAt @map("updated_at")
 
   // Relations to monthly withdrawals model
-  monthlyWithdrawals KametiMonthlyWithdrawal[]
+  monthly_withdrawals KametiMonthlyWithdrawal[]
 
   // Define table name in database
   @@map("kameti") 
@@ -47,18 +65,32 @@ model Kameti {
 
 model KametiMonthlyWithdrawal {
   id         Int      @id @default(autoincrement())
-  kametiId   Int
-  monthNumber Int
+  kameti_id   Int      @map("kameti_id")
+  month_number Int      @map("month_number")
   amount     Float
-  createdAt  DateTime @default(now())
-  updatedAt  DateTime @updatedAt
+  created_at  DateTime @default(now()) @map("created_at")
+  updated_at  DateTime @updatedAt @map("updated_at")
 
   // Relations to kameti model
-  kameti Kameti @relation(fields: [kametiId], references: [id])
+  kameti Kameti @relation(fields: [kameti_id], references: [id])
 
   // One withdrawal per month per kameti
-  @@unique([kametiId, monthNumber]) 
+  @@unique([kameti_id, month_number]) 
 
   // Define table name in database
   @@map("kameti_monthly_withdrawal")
+}
+
+
+model Admin {
+  id              Int      @id @default(autoincrement())
+  full_name       String   @map("full_name")
+  email           String   @unique
+  phone           String?  @unique
+  profile_picture String?  @map("profile_picture")
+  password_hash   String   @map("password_hash")
+  created_at      DateTime @default(now()) @map("created_at")
+  updated_at      DateTime @updatedAt @map("updated_at")
+
+  @@map("admin")
 }

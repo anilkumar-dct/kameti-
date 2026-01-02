@@ -1,9 +1,13 @@
 import { contextBridge, ipcRenderer } from 'electron'
 import { electronAPI } from '@electron-toolkit/preload'
-import { Kameti } from '@prisma/client'
+import { Kameti, User } from '@prisma/client'
 import { KametiCreateDto } from '../main/kameti/schema/kametiCreate.dto'
 import { KametiUpdateDto } from '../main/kameti/schema/kametiUpdate.dto'
 import { KametiQueryDto } from '../main/kameti/schema/kametiQuery.dto'
+import { UserCreateDto } from '../main/user/schema/userCreate.dto'
+import { UserUpdateDto } from '../main/user/schema/userUpdate.dto'
+import { AdminRegisterDto } from '../main/admin/schema/adminRegister.dto'
+import { AdminUpdateDto } from '../main/admin/schema/adminUpdate.dto'
 
 // Custom APIs for renderer
 const api = {
@@ -14,6 +18,18 @@ const api = {
     create: (data: KametiCreateDto) => ipcRenderer.invoke('kameti:create', data),
     update: (id: number, data: KametiUpdateDto) => ipcRenderer.invoke('kameti:update', id, data),
     delete: (id: number) => ipcRenderer.invoke('kameti:delete', id)
+  },
+  user: {
+    findAll: () => ipcRenderer.invoke('user:findAll'),
+    findById: (id: number) => ipcRenderer.invoke('user:findById', id),
+    findOne: (filter: Partial<User>) => ipcRenderer.invoke('user:findOne', filter),
+    create: (data: UserCreateDto) => ipcRenderer.invoke('user:create', data),
+    update: (id: number, data: UserUpdateDto) => ipcRenderer.invoke('user:update', id, data),
+    delete: (id: number) => ipcRenderer.invoke('user:delete', id)
+  },
+  admin: {
+    register: (data: AdminRegisterDto) => ipcRenderer.invoke('admin:register', data),
+    update: (id: number, data: AdminUpdateDto) => ipcRenderer.invoke('admin:update', id, data)
   }
 }
 

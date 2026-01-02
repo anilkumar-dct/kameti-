@@ -1,6 +1,5 @@
 import { Kameti, PrismaClient } from '@prisma/client'
 import { KametiCreateDto } from '../../schema/kametiCreate.dto'
-import { KametiResponseDto } from '../../schema/kametiRespone.dto'
 import { IKametiRepo } from '../interface/IKameti.Repo'
 import { KametiUpdateDto } from '../../schema/kametiUpdate.dto'
 import { CommonRepo } from '../../../common/CommonRepo/Common.Repo'
@@ -14,10 +13,7 @@ import { PaginatedResponse } from '../../../common/interfaces/IPaginatedResponse
  * Inherits `findById` and `create` from the generic `CommonRepo`.
  * Implements specific logic for `findAll`, `findOne`, `update`, and `delete`.
  */
-export class KametiRepo
-  extends CommonRepo<Kameti, KametiCreateDto, KametiQueryDto>
-  implements IKametiRepo
-{
+export class KametiRepo extends CommonRepo<Kameti, KametiCreateDto> implements IKametiRepo {
   /**
    * Initializes the repository with an injected Prisma client.
    * Passes `prisma.kameti` to the generic `CommonRepo` superclass.
@@ -28,12 +24,30 @@ export class KametiRepo
   }
 
   /**
+   * Retrieves a single record by its ID.
+   * Override CommonRepo to return DTO.
+   */
+  async findById(id: number): Promise<Kameti | null> {
+    const result = await this.prisma.kameti.findUnique({ where: { id } })
+    return result
+  }
+
+  /**
+   * Creates a new record in the database.
+   * Override CommonRepo to return DTO.
+   */
+  async create(data: KametiCreateDto): Promise<Kameti> {
+    const result = await this.prisma.kameti.create({ data })
+    return result
+  }
+
+  /**
    * Retrieves all Kameti records with optional filtering, pagination, sorting, and search.
    * Returns paginated response with metadata.
    * @param query - Optional query parameters for filtering.
    * @returns Paginated response with data and pagination metadata.
    */
-  async findAll(query?: KametiQueryDto): Promise<PaginatedResponse<KametiResponseDto>> {
+  async findAll(query?: KametiQueryDto): Promise<PaginatedResponse<Kameti>> {
     // Build pagination arguments
     const pagination = QueryBuilder.getPagination(query)
 
@@ -104,7 +118,7 @@ export class KametiRepo
     const totalPages = Math.ceil(totalCount / limit)
 
     return {
-      data,
+      data: data,
       pagination: {
         page,
         limit,
@@ -122,8 +136,9 @@ export class KametiRepo
    * Useful for finding by non-unique fields like status or title.
    * @param filter - Partial Kameti object (e.g. `{ status: 'ACTIVE' }`).
    */
-  async findOne(filter: Partial<Kameti>): Promise<KametiResponseDto | null> {
-    return await this.prisma.kameti.findFirst({ where: filter })
+  async findOne(filter: Partial<Kameti>): Promise<Kameti | null> {
+    const result = await this.prisma.kameti.findFirst({ where: filter })
+    return result
   }
 
   /**
@@ -131,15 +146,17 @@ export class KametiRepo
    * @param id - ID of the record to update.
    * @param data - DTO containing the fields to update.
    */
-  async update(id: number, data: KametiUpdateDto): Promise<KametiResponseDto> {
-    return await this.prisma.kameti.update({ where: { id }, data })
+  async update(id: number, data: KametiUpdateDto): Promise<Kameti> {
+    const result = await this.prisma.kameti.update({ where: { id }, data })
+    return result
   }
 
   /**
    * Permanently deletes a Kameti record.
    * @param id - ID of the record to delete.
    */
-  async delete(id: number): Promise<KametiResponseDto> {
-    return await this.prisma.kameti.delete({ where: { id } })
+  async delete(id: number): Promise<Kameti> {
+    const result = await this.prisma.kameti.delete({ where: { id } })
+    return result
   }
 }

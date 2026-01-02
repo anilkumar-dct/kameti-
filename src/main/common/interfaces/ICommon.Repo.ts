@@ -1,5 +1,3 @@
-import { PaginatedResponse } from './IPaginatedResponse'
-
 /**
  * Generic Interface defining the standard Read and Create operations shared across all modules.
  *
@@ -9,11 +7,8 @@ import { PaginatedResponse } from './IPaginatedResponse'
  *
  * @template T - The Domain Entity / Prisma Model type.
  * @template CreateDto - The DTO used for creation.
- * @template QueryDto - The DTO used for querying/filtering. Defaults to void if not specified.
  */
-export interface ICommonRepo<T, CreateDto, QueryDto = void> {
-  /** Retrieves all records, optionally filtered by query parameters. Returns paginated response. */
-  findAll(query?: QueryDto): Promise<PaginatedResponse<T>>
+export interface ICommonRepo<T, CreateDto> {
   /** Retrieves a record by its numerical ID. */
   findById(id: number): Promise<T | null>
   /** Creates a new record. */
