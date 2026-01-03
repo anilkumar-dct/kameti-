@@ -6,7 +6,7 @@ import { adminUpdateDto, AdminUpdateDto } from '../schema/adminUpdate.dto'
 import { adminRegisterDto, AdminRegisterDto } from '../schema/adminRegister.dto'
 import { ValidationUtils } from '../../common/utils/ValidationUtils'
 import { MapperUtils } from '../../common/utils/MapperUtils'
-import * as bcrypt from 'bcrypt'
+import * as bcrypt from 'bcryptjs'
 
 /**
  * Service class for handling Admin-related business logic.

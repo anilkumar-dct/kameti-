@@ -29,7 +29,7 @@ model User {
   phone_no        String?    @unique
   profile_image   String?
   status          UserStatus @default(INACTIVE)
-  aadhaar_number  String?
+  aadhaar_number  String?    @unique
   reference       Int?
   created_at      DateTime   @default(now())
   updated_at      DateTime   @updatedAt
@@ -37,6 +37,10 @@ model User {
   // Self-referencing relation
   referrer        User?      @relation("UserReference", fields: [reference], references: [id])
   referrals       User[]     @relation("UserReference")
+
+
+  // One-to-One relation with Address
+  address         Address?
 }
 
 // Define the enum for Kameti status
@@ -81,6 +85,24 @@ model KametiMonthlyWithdrawal {
   @@map("kameti_monthly_withdrawal")
 }
 
+
+
+model Address {
+  id        Int     @id @default(autoincrement())
+  house_no  String?
+  locality  String?
+  city      String
+  state     String
+  pin_code  String
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+
+  // One-to-One relation with User
+  userId Int   @unique
+  user   User  @relation(fields: [userId], references: [id])
+
+  @@map("address")
+}
 
 model Admin {
   id              Int      @id @default(autoincrement())
